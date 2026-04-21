@@ -97,7 +97,6 @@ npx ts-node --compiler-options '{"module":"CommonJS"}' examples/ai-agent-demo/in
 AT1C introduces a simple but powerful rule:
 
 > **Nothing acts on behalf of a user without explicit approval**
-
 ```mermaid
 flowchart TD
     U[User] -->|Identify| I[AT1C Identity]
@@ -109,8 +108,10 @@ flowchart TD
     U -->|Approve| P[Proof Generated]
     U -->|Deny| D[Action Blocked]
 
-    P --> E
-
+    P --> E[Action Executed]
+```
+3. Save + exit Nano
+Ctrl + O → Enter
 
 ---
 
