@@ -45,7 +45,7 @@ But:
 “Who allowed them to act—and can that be proven?”
 
 AT1C answers that.
-
+Early-stage protocol. Core concepts and demos implemented. Actively exploring real-world applications.
 ---
 
  🚀 Quick Demo (30 seconds)
