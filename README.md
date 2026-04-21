@@ -1,20 +1,50 @@
- 🔐 AT1C Protocol
+🔐 AT1C Protocol
 
-**User-controlled identity & AI action approval layer**
+A human approval layer for AI and digital actions
 
-AT1C is a lightweight protocol that ensures **humans stay in control** when apps or AI agents attempt to act on their behalf.
+AT1C introduces a new primitive:
 
----
- ⚡ Why AT1C?
+No system—human or AI—can act on behalf of a user without explicit approval.
 
-Modern systems allow apps and AI to act silently.
+🧠 The Problem
 
-AT1C flips that model:
+Today’s internet is built on implicit trust:
 
-* 🔐 Users explicitly approve actions
-* 🤖 AI agents require permission before acting
-* 🧾 Actions generate verifiable proof
-* 🧑 Identity is controlled by the user — not platforms
+Apps act on behalf of users silently
+AI agents can execute without oversight
+Identity is fragmented and platform-controlled
+
+This creates a growing risk:
+
+Automation without accountability
+
+⚡ The AT1C Solution
+
+AT1C adds a simple but powerful control layer:
+
+🔐 User-controlled identity
+✋ Explicit approval before any action
+🧾 Verifiable proof of consent
+🤖 AI agents gated by human intent
+
+AT1C doesn’t replace existing systems — it wraps them with accountability.
+
+🚀 What This Enables
+Safe AI agents that cannot act without permission
+Consent-based authentication (beyond passwords)
+Auditable digital actions (who approved what, when)
+A foundation for human-in-the-loop automation
+🌍 Why It Matters
+
+As AI becomes autonomous, the question is no longer:
+
+“Can systems act?”
+
+But:
+
+“Who allowed them to act—and can that be proven?”
+
+AT1C answers that.
 
 ---
 
