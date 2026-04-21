@@ -95,7 +95,7 @@ AT1C can become the standard layer for:
 
  🤝 Contributing
 
-This project is start-up build for humanity.
+This project is early-stage and focused on building open, human-first infrastructure for AI systems.
 
 Ideas, feedback, and collaboration are welcome.
 
