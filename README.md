@@ -2,6 +2,8 @@
 
 A human approval layer for AI and digital actions
 
+[Read the Whitepaper](docs/whitepaper.md) 
+
 AT1C introduces a new primitive:
 
 No system—human or AI—can act on behalf of a user without explicit approval.
