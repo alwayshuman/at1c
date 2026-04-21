@@ -1,143 +1,108 @@
-# AT1C
+ 🔐 AT1C Protocol
 
-**Prove you said yes.**
+**User-controlled identity & AI action approval layer**
 
-AT1C is a protocol that ensures every digital action—by apps or AI—is explicitly approved and provable by the user.
+AT1C is a lightweight protocol that ensures **humans stay in control** when apps or AI agents attempt to act on their behalf.
+
+---
+ ⚡ Why AT1C?
+
+Modern systems allow apps and AI to act silently.
+
+AT1C flips that model:
+
+* 🔐 Users explicitly approve actions
+* 🤖 AI agents require permission before acting
+* 🧾 Actions generate verifiable proof
+* 🧑 Identity is controlled by the user — not platforms
 
 ---
 
-## Why AT1C
+ 🚀 Quick Demo (30 seconds)
 
-Today, digital systems act without clear user consent.
+Clone and run:
 
-- AI can take actions without proof of approval  
-- Platforms control identity and access  
-- Users cannot verify what they authorised  
-- Digital presence can be lost or restricted  
+```bash
+git clone https://github.com/alwayshuman/at1c.git
+cd at1c
+npx ts-node --compiler-options '{"module":"CommonJS"}' examples/login-demo/index.ts
+```
 
-AT1C introduces a simple rule:
-
-> Nothing acts without your approval—and every approval is provable.
-
----
-
-## What AT1C Does
-
-- Requires user approval before actions occur  
-- Generates cryptographic proof of approval  
-- Allows permissions to be revoked at any time  
-- Provides a clear activity history  
+👉 Try approving and rejecting requests.
 
 ---
 
-## Example
+ 🔘 Demo 1 — Sign in with AT1C
 
-```ts
-const at1c = new AT1C({ apiKey: "demo_key" })
+Simulates a login flow where:
 
-const user = await at1c.identify()
+* user is identified
+* approval is requested
+* access is granted only after consent
 
-const result = await at1c.approve({
-  userId: user.userId,
-  action: "Sign in",
-  actor: "demo-app.com"
-})
-
----
-
-## 🧱 Project Structure
-
-- /docs → architecture & concepts  
-- /spec → protocol & cryptography  
-- /sdk → developer tools  
-- /examples → working demos  
+```bash
+npx ts-node --compiler-options '{"module":"CommonJS"}' examples/login-demo/index.ts
+```
 
 ---
 
-## 📄 Documentation
+ 🤖 Demo 2 — AI Agent Approval
 
-Start here:
-- docs/architecture.md
-- docs/authorization-model.md
+Simulates an AI attempting to act:
+
+* AI requests permission
+* user approves or denies
+* action is controlled by the user
+
+```bash
+npx ts-node --compiler-options '{"module":"CommonJS"}' examples/ai-agent-demo/index.ts
+```
 
 ---
 
-## 🚧 Status
+ 🧠 Core Concept
 
-Early-stage protocol design.  
-Contributions and feedback welcome.
+AT1C introduces a simple but powerful rule:
+
+> **Nothing acts on behalf of a user without explicit approval**
 
 ---
 
-## 📜 License
+ 📦 Project Structure
+
+```
+at1c/
+├── packages/
+│   └── sdk/        # Core AT1C client
+├── examples/
+│   ├── login-demo/
+│   └── ai-agent-demo/
+├── docs/           # Protocol docs (coming soon)
+```
+
+---
+
+ 🔮 Vision
+
+AT1C can become the standard layer for:
+
+* AI safety & accountability
+* secure identity flows
+* permission-based automation
+* verifiable digital actions
+
+---
+
+ 🤝 Contributing
+
+This project is start-up build for humanity.
+
+Ideas, feedback, and collaboration are welcome.
+
+---
+
+ 📜 License
 
 MIT
-
-
-It ensures that every autonomous action can be:
-
-* Authenticated
-* Authorized
-* Auditable
-
----
-
-## 🔍 What Problem It Solves
-
-AI agents today can act — but cannot prove:
-
-* who authorized them
-* what they are allowed to do
-* whether an action is legitimate
-
-AT1C introduces a structured authorization model to solve this.
-
----
-
-## ⚙️ Core Idea
-
-User → Signs Policy → Agent → Executes → Receipt
-
-Every action is backed by:
-
-* cryptographic identity
-* explicit policy
-* verifiable execution record
-
----
-
-## 🧱 Project Structure
-
-* `/docs` → architecture & concepts
-* `/spec` → protocol & cryptography
-* `/sdk` → developer tools
-* `/examples` → working demos
-
----
-
-## 📄 Documentation
-
-Start here:
-
-* docs/architecture.md
-* docs/authorization-model.md
-
----
-
-## 🚧 Status
-
-Early-stage protocol design.
-Contributions and feedback welcome.
-
----
-
-## 📜 License
-
-MIT
-
-git add README.md
-git commit -m "Update README"
-git push
-x
 
 
