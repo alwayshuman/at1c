@@ -98,8 +98,18 @@ AT1C introduces a simple but powerful rule:
 
 > **Nothing acts on behalf of a user without explicit approval**
 
+```mermaid
+flowchart TD
+    U[User] -->|Identify| I[AT1C Identity]
+    A[App / AI Agent] -->|Request Action| R[Approval Request]
 
-[Action Executed]
+    I --> R
+    R -->|Ask| U
+
+    U -->|Approve| P[Proof Generated]
+    U -->|Deny| D[Action Blocked]
+
+    P --> E
 
 
 ---
