@@ -1,12 +1,15 @@
 🔐 AT1C Protocol
 
-A human approval layer for AI and digital actions
+A verifiable approval layer for human and AI actions
 
 [Read the Whitepaper](docs/whitepaper.md) 
 
 AT1C introduces a new primitive:
 
-No system—human or AI—can act on behalf of a user without explicit approval.
+Read the AT1C Protocol Specification:
+👉 docs/protocol.md
+
+**Every approval in AT1C can be independently verified—across systems, platforms, and time**
 
 🧠 The Problem
 
