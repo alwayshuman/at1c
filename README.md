@@ -2,7 +2,11 @@
 
 A verifiable approval layer for human and AI actions
 
-[Read the Whitepaper](docs/whitepaper.md) 
+- 📜 **AT1C Protocol (v0.1)**  
+  👉 [docs/protocol.md](docs/protocol.md)
+
+- 📄 **Whitepaper**  
+  👉 [docs/whitepaper.md](docs/whitepaper.md) 
 
 AT1C introduces a new primitive:
 
