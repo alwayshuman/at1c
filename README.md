@@ -1,10 +1,16 @@
+
 🔐** AT1C Protocol**
+
+**Make every AI action accountable to a human—by default.**
 
 Verifiable approval for human and AI actions
 
 AT1C ensures that no system—human or AI—can act on behalf of a user without explicit, provable approval.
 
+“Why this matters” 
+
 ⚡ Quick Example
+
 const user = await at1c.identify()
 
 const approval = await at1c.request({
@@ -24,12 +30,16 @@ await at1c.verify(proof)
 **Today’s systems act on implicit trust:**
 
 Apps act on behalf of users silently
+
 AI agents execute without oversight
+
 Identity is fragmented and platform-controlled
 
 **This leads to:**
 
 Automation without accountability
+
+
 
 ⚡ The AT1C Solution
 
@@ -50,6 +60,8 @@ No action is valid unless backed by verifiable user approval
 AT1C doesn’t replace existing systems—it wraps them with accountability.
 
 🚀 Try It (30 seconds)
+
+**Right now someone might wonder** “how do I get at1c?”
 
 Clone and run:
 
@@ -72,9 +84,10 @@ Action is controlled by the user
 npx ts-node --compiler-options '{"module":"CommonJS"}' examples/ai-agent-demo/index.ts
 
 📚 Documentation
-
+ ** AT1C Protocol** 
 👉 https://github.com/alwayshuman/at1c/blob/main/docs/protocol.md
-
+  
+ ** AT1C Whitepaper**
 👉 https://github.com/alwayshuman/at1c/blob/main/docs/whitepaper.md
 
 🧩 Core Concept
