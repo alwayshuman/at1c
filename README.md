@@ -58,23 +58,24 @@ cd at1c
 npx ts-node --compiler-options '{"module":"CommonJS"}' examples/login-demo/index.ts
 
 🔘 Demo 1 — Sign in with AT1C
+
 User is identified
 Approval is requested
 Access granted only after consent
 npx ts-node --compiler-options '{"module":"CommonJS"}' examples/login-demo/index.ts
 
 🤖 Demo 2 — AI Agent Approval
+
 AI requests permission
 User approves or denies
 Action is controlled by the user
 npx ts-node --compiler-options '{"module":"CommonJS"}' examples/ai-agent-demo/index.ts
 
 📚 Documentation
-📜 Protocol (v0.1)
-👉 docs/protocol.md
 
-📄 Whitepaper
-👉 docs/whitepaper.md
+👉 https://github.com/alwayshuman/at1c/blob/main/docs/protocol.md
+
+👉 https://github.com/alwayshuman/at1c/blob/main/docs/whitepaper.md
 
 🧩 Core Concept
 
