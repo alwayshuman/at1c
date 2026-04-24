@@ -1,5 +1,5 @@
 
-🔐** AT1C Protocol**
+🔐  **AT1C Protocol**
 
 **Make every AI action accountable to a human—by default.**
 
@@ -7,7 +7,7 @@ Verifiable approval for human and AI actions
 
 AT1C ensures that no system—human or AI—can act on behalf of a user without explicit, provable approval.
 
-“Why this matters” 
+**Why this matters** 
 
 ⚡ Quick Example
 
@@ -25,6 +25,7 @@ const proof = await at1c.getProof(approval)
 
 // Any system can verify this
 await at1c.verify(proof)
+
 🧠 The Problem
 
 **Today’s systems act on implicit trust:**
@@ -38,8 +39,6 @@ Identity is fragmented and platform-controlled
 **This leads to:**
 
 Automation without accountability
-
-
 
 ⚡ The AT1C Solution
 
@@ -57,7 +56,7 @@ No action is valid unless backed by verifiable user approval
 
 🤖 AI agents gated by human intent
 
-AT1C doesn’t replace existing systems—it wraps them with accountability.
+  ** AT1C doesn’t replace existing systems—it wraps them with accountability**
 
 🚀 Try It (30 seconds)
 
@@ -84,23 +83,27 @@ Action is controlled by the user
 npx ts-node --compiler-options '{"module":"CommonJS"}' examples/ai-agent-demo/index.ts
 
 📚 Documentation
- ** AT1C Protocol** 
+
+ **AT1C Protocol**
+ 
 👉 https://github.com/alwayshuman/at1c/blob/main/docs/protocol.md
-  
- ** AT1C Whitepaper**
+ 
+ **AT1C Whitepaper**
+
 👉 https://github.com/alwayshuman/at1c/blob/main/docs/whitepaper.md
 
 🧩 Core Concept
 
-AT1C introduces a simple rule:
+**AT1C introduces a simple rule:**
 
 Nothing acts on behalf of a user without explicit approval
 
 Upgraded with:
 
-Every approval is verifiable
+**Every approval is verifiable**
 
 🌍 What This Enables
+
 Safe AI agents (cannot act without permission)
 
 Consent-based authentication (beyond passwords)
@@ -108,9 +111,10 @@ Consent-based authentication (beyond passwords)
 Auditable digital actions (who approved what, when)
 
 Human-in-the-loop automation
+
 🔮 Vision
 
-AT1C can become the standard layer for:
+**AT1C can become the standard layer for:**
 
 AI safety & accountability
 
@@ -121,6 +125,7 @@ Permission-based automation
 Verifiable digital actions
 
 📦 Project Structure
+
 at1c/
 ├── docs/          # Protocol + whitepaper
 ├── packages/      # SDK
@@ -133,3 +138,4 @@ Early-stage protocol. Open to ideas, feedback, and collaboration.
 
 MIT
 
+A.Human
