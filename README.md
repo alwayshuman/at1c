@@ -1,15 +1,15 @@
 
-🔐  **AT1C Protocol**
+  **AT1C Protocol**
 
 **Make every AI action accountable to a human—by default.**
 
 Verifiable approval for human and AI actions
 
-AT1C ensures that no system—human or AI—can act on behalf of a user without explicit, provable approval.
+Nothing can act on behalf of a user without their approval—and that approval can be proven.
 
 **Why this matters** 
 
-⚡ Quick Example
+ Quick Example
 
 const user = await at1c.identify()
 
@@ -26,7 +26,7 @@ const proof = await at1c.getProof(approval)
 // Any system can verify this
 await at1c.verify(proof)
 
-🧠 The Problem
+ The Problem
 
 **Today’s systems act on implicit trust:**
 
@@ -40,7 +40,7 @@ Identity is fragmented and platform-controlled
 
 Automation without accountability
 
-⚡ The AT1C Solution
+ The AT1C Solution
 
 **AT1C introduces a new primitive:**
 
@@ -48,17 +48,18 @@ No action is valid unless backed by verifiable user approval
 
 **It adds a simple control layer:**
 
-🔐 User-controlled identity
+ User-controlled identity
 
-✋ Explicit approval before any action
+ Explicit approval before any action
 
-🧾 Verifiable proof of consent
 
-🤖 AI agents gated by human intent
+ Verifiable proof of consent
+
+ AI agents gated by human intent
 
   ** AT1C doesn’t replace existing systems—it wraps them with accountability**
 
-🚀 Try It (30 seconds)
+ Try It (30 seconds)
 
 **Right now someone might wonder** “how do I get at1c?”
 
@@ -68,31 +69,31 @@ git clone https://github.com/alwayshuman/at1c.git
 cd at1c
 npx ts-node --compiler-options '{"module":"CommonJS"}' examples/login-demo/index.ts
 
-🔘 Demo 1 — Sign in with AT1C
+ Demo 1 — Sign in with AT1C
 
 User is identified
 Approval is requested
 Access granted only after consent
 npx ts-node --compiler-options '{"module":"CommonJS"}' examples/login-demo/index.ts
 
-🤖 Demo 2 — AI Agent Approval
+ Demo 2 — AI Agent Approval
 
 AI requests permission
 User approves or denies
 Action is controlled by the user
 npx ts-node --compiler-options '{"module":"CommonJS"}' examples/ai-agent-demo/index.ts
 
-📚 Documentation
+ Documentation
 
  **AT1C Protocol**
  
-👉 https://github.com/alwayshuman/at1c/blob/main/docs/protocol.md
+ https://github.com/alwayshuman/at1c/blob/main/docs/protocol.md
  
  **AT1C Whitepaper**
 
-👉 https://github.com/alwayshuman/at1c/blob/main/docs/whitepaper.md
+ https://github.com/alwayshuman/at1c/blob/main/docs/whitepaper.md
 
-🧩 Core Concept
+ Core Concept
 
 **AT1C introduces a simple rule:**
 
@@ -102,7 +103,7 @@ Upgraded with:
 
 **Every approval is verifiable**
 
-🌍 What This Enables
+ What This Enables
 
 Safe AI agents (cannot act without permission)
 
@@ -112,7 +113,7 @@ Auditable digital actions (who approved what, when)
 
 Human-in-the-loop automation
 
-🔮 Vision
+ Vision
 
 **AT1C can become the standard layer for:**
 
@@ -124,13 +125,13 @@ Permission-based automation
 
 Verifiable digital actions
 
-📦 Project Structure
+ Project Structure
 
 at1c/
 ├── docs/          # Protocol + whitepaper
 ├── packages/      # SDK
 ├── examples/      # Demos
-🤝 Contributing
+ Contributing
 
 Early-stage protocol. Open to ideas, feedback, and collaboration.
 
