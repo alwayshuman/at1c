@@ -9,6 +9,17 @@ Nothing can act on behalf of a user without their approval—and that approval c
 
 **Why this matters** 
 
+ AT1C Protocol
+
+**A verifiable approval layer for human and AI actions**
+
+Nothing can act on behalf of a user without their approval—and that approval can be proven.
+
+---
+
+ How it works
+
+Request → Approve → Proof → Verify
  Quick Example
 
 const user = await at1c.identify()
@@ -132,6 +143,23 @@ at1c/
 ├── packages/      # SDK
 ├── examples/      # Demos
  Contributing
+
+AT1C is a lightweight approval layer that ensures all actions performed on behalf of a user are explicitly authorized and verifiable.
+
+Core flow:
+
+1. A system requests permission to act
+2. The user approves or denies
+3. A proof of approval is generated
+4. Any system can verify that proof
+
+This enables developers to build applications where actions are not just executed—but accountable.
+
+**Stripe** made payments simple for developers.
+
+**AT1C** does the same for user approval.
+
+Instead of building complex identity and permission systems, developers can use AT1C to request, approve, and verify actions with a simple API.
 
 Early-stage protocol. Open to ideas, feedback, and collaboration.
 
