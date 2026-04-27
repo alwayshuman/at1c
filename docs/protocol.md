@@ -1,198 +1,291 @@
-AT1C Protocol (v0.1)
-Overview
+ 🔐 AT1C Protocol Specification (v0.1)
 
-AT1C defines a simple rule:
+---
 
-No action is valid unless backed by verifiable user approval.
+ 1. Overview
 
-AT1C introduces a standard way to:
+The AT1C Protocol defines a standard for **verifiable human approval of digital actions**.
 
-Request approval for an action
-Capture user consent
-Generate a verifiable proof
-Allow any system to independently verify that approval
+> **No system—human or AI—may act on behalf of a user without explicit approval, and that approval must be provable.**
 
-AT1C is implementation-agnostic and can operate:
+The protocol is **implementation-agnostic** and can operate across different infrastructures.
 
-off-chain (local / server verification)
-on-chain (anchored proofs)
-or hybrid
-1. Core Concepts
-1.1 Actors
-User
-The human who controls approval authority
-Actor
-The entity requesting to act (app, API, AI agent)
-Verifier
-Any system validating that an action was approved
-1.2 Action
+---
 
-An action is any operation performed on behalf of a user.
+ 2. Core Principle
 
-Examples:
+All actions performed on behalf of a user MUST satisfy:
 
-login
-post_content
-transfer_funds
-execute_ai_task
-1.3 Approval
+1. **Explicit Approval** — granted by the user
+2. **Bound Context** — tied to a specific action and scope
+3. **Verifiable Proof** — independently checkable by any party
 
-An approval is a user-authorized grant for a specific action.
+---
 
-1.4 Proof
+ 3. Core Flow
 
-A proof is a verifiable record that an approval occurred.
+```text
+Request → Approve → Proof → Verify
+```
 
-2. Approval Object
+ 3.1 Request
 
-The Approval Object is the core primitive of AT1C.
+A system or agent submits a request to perform an action.
 
+ 3.2 Approve / Deny
+
+The user explicitly approves or denies the request.
+
+ 3.3 Proof Generation
+
+If approved, a proof is generated binding:
+
+* user
+* action
+* context
+* timestamp
+
+ 3.4 Verification
+
+Any system may verify the proof before executing or accepting the action.
+
+---
+
+ 4. Entities
+
+ 4.1 User (Human Principal)
+
+A user represents the root authority.
+
+* Owns identity
+* Grants approvals
+* May delegate permissions
+
+---
+
+ 4.2 Agent
+
+An agent is any system acting on behalf of a user.
+
+Types include:
+
+* AI agents
+* applications
+* services
+
+All agents MUST:
+
+* operate within an authorization scope
+* require approval for actions outside pre-approved scope
+
+---
+
+ 4.3 Verifier
+
+A verifier is any system that:
+
+* checks proof validity
+* enforces protocol rules before accepting an action
+
+---
+
+ 5. Data Structures
+
+ 5.1 ApprovalRequest
+
+```json
 {
-  "id": "uuid",
-  "user": "user_id_or_did",
-  "actor": "actor_id",
+  "actor": "string",
+  "action": "string",
+  "resource": "string",
+  "context": "optional metadata"
+}
+```
+
+---
+
+ 5.2 Approval
+
+```json
+{
+  "id": "string",
+  "user": "string",
+  "actor": "string",
   "action": "string",
   "resource": "string",
   "timestamp": "ISO8601",
-  "expires_at": "ISO8601 | null",
-  "nonce": "random_string",
-  "signature": "user_signature"
+  "approved": true | false
 }
-Field Definitions
-id → unique approval identifier
-user → identity of approving user
-actor → requesting entity
-action → operation being approved
-resource → target of action
-timestamp → time of approval
-expires_at → optional expiry
-nonce → prevents replay attacks
-signature → cryptographic proof of approval
-3. Approval Flow
-Step 1 — Request
+```
 
-Actor requests approval:
+---
 
+ 5.3 Proof
+
+```json
 {
-  "actor": "ai_agent_1",
-  "action": "post_content",
-  "resource": "user://social_account"
+  "approval": { ...Approval },
+  "signature": "string"
 }
-Step 2 — User Decision
+```
 
-User explicitly:
+---
 
-approves
-or denies
-Step 3 — Approval Creation
+ 6. Protocol Rules
 
-If approved, system generates an Approval Object and signs it.
+ Rule 1 — No Implicit Authority
 
-Step 4 — Proof Generation
+No action may be executed without explicit approval unless pre-authorized within defined scope.
 
-Proof = Approval Object + valid signature
+---
 
-Step 5 — Action Execution
+ Rule 2 — Context Binding
 
-Actor executes action only if proof is present
+Approval MUST be bound to a specific:
 
-Step 6 — Verification
+* action
+* actor
+* resource
 
-Verifier checks proof before accepting action.
+Reuse of approval outside its context is invalid.
 
-4. Verification Rules
+---
 
-A proof is valid if:
+ Rule 3 — Proof Integrity
 
-4.1 Signature Validity
-Signature matches user
-Signature covers full approval payload
-4.2 Integrity
-No fields altered after signing
-4.3 Expiry Check
-expires_at not passed (if present)
-4.4 Nonce Uniqueness
-Prevent replay of approvals
-4.5 Context Match
-actor, action, and resource match actual execution
-5. Security Properties
+Proofs MUST be:
 
-AT1C guarantees:
+* tamper-evident
+* reproducible
+* verifiable without trust in the issuer
 
-Explicit Consent
+---
 
-No action is valid without user approval
+ Rule 4 — Verification Before Execution
 
-Verifiability
+Any system receiving a request MUST verify proof before executing the action.
 
-Any third party can validate approval independently
+---
 
-Replay Protection
+ Rule 5 — Revocation
 
-Nonces prevent reuse of approvals
+Users MUST be able to revoke:
 
-Auditability
+* agent permissions
+* prior approvals (where applicable)
 
-Approvals can be stored and inspected
+---
 
-6. Optional Extensions (Future)
+ 7. Authorization Scope
 
-These are not required for v0, but supported by design:
+Agents may operate under predefined scopes:
 
-6.1 Identity Layer
-DID-based identities
-Portable user identity
-6.2 Advanced Proofs
-Selective disclosure
-Zero-Knowledge Proof
-6.3 Multi-Signature Approval
-Family / validator attestations
-Threshold-based approval policies
-6.4 Delegation
-Users grant scoped permissions to agents
-6.5 Lifecycle & Inheritance
-Transfer approval authority under defined conditions
-6.6 Blockchain Anchoring
-Store approval hashes on-chain
-Support multiple chains (e.g. Nervos CKB, others)
-7. Design Principles
+Examples:
 
-AT1C implementations must follow:
+* read-only access
+* limited actions
+* time-bound permissions
 
-Minimalism
+Actions outside scope MUST trigger a new approval request.
 
-Keep core protocol small and composable
+---
 
-Verifiability First
+ 8. Identity Model
 
-Every approval must be independently verifiable
+AT1C Defines:
 
-User Control
+* user identity is self-controlled
+* identity may be represented across different systems
 
-Users retain authority at all times
+The protocol does NOT enforce a specific identity implementation.
 
-Implementation Agnostic
+---
 
-Protocol must not depend on a specific platform or chain
+ 9. Cryptographic Requirements
 
-8. Non-Goals (v0)
+Implementations MUST provide:
 
-AT1C does NOT define:
+* secure signature mechanism
+* collision-resistant hashing
+* timestamp integrity
 
-UI/UX design
-Specific blockchain implementations
-Key storage mechanisms
-Identity verification providers
-9. Summary
+Optional enhancements:
 
-AT1C introduces a universal primitive:
+* zero-knowledge proofs
+* post-quantum signatures
+* hardware-backed keys
 
-Verifiable human approval for digital actions
+---
 
-It enables:
+ 10. Agent Accountability
 
-accountable AI systems
-consent-based authentication
-auditable digital behavior
+All agent actions MUST be:
 
-Without requiring changes to existing infrastructure.
+* attributable to a user
+* traceable through proof
+* verifiable independently
+
+> **Unattributed agents are non-compliant with the protocol.**
+
+---
+
+ 11. Inheritance & Lifecycle (Optional Extension)
+
+Implementations MAY support identity lifecycle features:
+
+* inactivity detection
+* multi-party attestation
+* transfer of control
+
+Example model:
+
+* time-lock (inactivity)
+* attestation (trusted confirmation)
+
+Both conditions required for transfer.
+
+---
+
+ 12. Implementation Agnosticism
+
+The AT1C Protocol:
+
+* is not tied to any blockchain
+* is not tied to any identity provider
+* is not tied to any execution environment
+
+It MAY be implemented using:
+
+* UTXO-based systems
+* account-based systems
+* off-chain systems
+
+---
+
+ 13. Compliance
+
+A system is AT1C-compliant if:
+
+* all actions require valid approval or scoped authorization
+* all approvals produce verifiable proof
+* all proofs are verified before execution
+
+---
+
+ 14. Summary
+
+AT1C defines a minimal rule:
+
+> **Actions require approval. Approval produces proof. Proof enables verification.**
+
+This establishes a foundation for:
+
+* accountable automation
+* user-controlled identity
+* verifiable digital interactions
+
+---
+
+**Protocol Specification (v0.1)**
+
+A.Human
