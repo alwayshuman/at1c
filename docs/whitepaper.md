@@ -147,7 +147,7 @@ This provides:
 
  9. Implementation Strategy
 
-AT1C follows a **Satoshi-style release model** inspired by Satoshi Nakamoto:
+AT1C follows a **Satoshi-style release model** 
 
 * Public domain specification
 * Open-source reference implementations
@@ -226,3 +226,4 @@ It is not a replacement for existing systems, but a layer that makes them **trus
 **AT1C is a protocol for accountable automation—built for the age of AI.**
 
  A.Human
+
