@@ -8,6 +8,8 @@ Verifiable approval for human and AI actions
 Nothing can act on behalf of a user without their approval—and that approval can be proven.
 
 **Why this matters** 
+ [Read the Whitepaper](docs/whitepaper.md)
+
 
  AT1C Protocol
 
@@ -168,3 +170,5 @@ Early-stage protocol. Open to ideas, feedback, and collaboration.
 MIT
 
 A.Human
+
+
