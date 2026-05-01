@@ -10,10 +10,9 @@ Nothing can act on behalf of a user without their approval—and that approval c
 **Why this matters** 
  [Read the Whitepaper](docs/whitepaper.md)
 
+**The approval layer for AI agents and user-controlled identity**
 
- AT1C Protocol
-
-**A verifiable approval layer for human and AI actions**
+ AT1C Protocol README
 
 Nothing can act on behalf of a user without their approval—and that approval can be proven.
 
