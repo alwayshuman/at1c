@@ -1,9 +1,36 @@
+
+const fs = require("fs")
+const path = require("path")
+
 export class AT1C {
+  private apiKey: string
+  private receipts: any[] = []
+  private receiptsFile = path.join(process.cwd(), "receipts.json")
+
   constructor(config: { apiKey: string }) {
     this.apiKey = config.apiKey
+    this.loadReceipts()
   }
 
-  private apiKey: string
+  private loadReceipts() {
+    try {
+      if (fs.existsSync(this.receiptsFile)) {
+        const data = fs.readFileSync(this.receiptsFile, "utf-8")
+        this.receipts = JSON.parse(data)
+      }
+    } catch (err) {
+      console.error("Failed to load receipts:", err)
+      this.receipts = []
+    }
+  }
+
+  private saveReceipts() {
+    try {
+      fs.writeFileSync(this.receiptsFile, JSON.stringify(this.receipts, null, 2))
+    } catch (err) {
+      console.error("Failed to save receipts:", err)
+    }
+  }
 
   async identify() {
     return {
@@ -31,16 +58,33 @@ export class AT1C {
       })
     })
 
-    if (answer.toLowerCase() !== "y") {
-      return { status: "denied" }
+    const approved = answer.toLowerCase() === "y"
+
+    const receipt = {
+      receiptId: "receipt_" + Date.now(),
+      userId,
+      action,
+      actor,
+      status: approved ? "approved" : "denied",
+      timestamp: Date.now()
+    }
+
+    this.receipts.push(receipt)
+    this.saveReceipts()
+
+    if (!approved) {
+      return { status: "denied", receipt }
     }
 
     return {
       status: "approved",
       proof: "proof_" + Math.random().toString(36).substring(2),
-      receiptId: "receipt_" + Date.now(),
-      timestamp: Date.now()
+      receipt
     }
+  }
+
+  getReceipts() {
+    return this.receipts
   }
 
   async withApproval(config: any, fn: Function) {

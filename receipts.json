@@ -1,0 +1,10 @@
+[
+  {
+    "receiptId": "receipt_1777722546808",
+    "userId": "user_0en1ld",
+    "action": "Sign in",
+    "actor": "demo-app.com",
+    "status": "approved",
+    "timestamp": 1777722546808
+  }
+]
