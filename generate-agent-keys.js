@@ -8,9 +8,9 @@
  *   node generate-agent-keys.js --out my-agent-keys.json
  */
 
-const fs     = require('fs')
-const path   = require('path')
-const crypto = require('crypto')
+const fs   = require('fs')
+const path = require('path')
+const { generateKeyPair } = require('@at1c/sdk')
 
 const args = process.argv.slice(2)
 
@@ -27,15 +27,10 @@ if (fs.existsSync(outFile)) {
   process.exit(1)
 }
 
-const { publicKey, privateKey } = crypto.generateKeyPairSync('ed25519', {
-  publicKeyEncoding:  { type: 'spki',  format: 'pem' },
-  privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
-})
-
-const publicKeyHex = crypto
-  .createPublicKey(publicKey)
-  .export({ type: 'spki', format: 'der' })
-  .toString('hex')
+const keypair = generateKeyPair()
+const publicKey    = keypair.publicKey
+const privateKey   = keypair.secretKey
+const publicKeyHex = keypair.publicKey
 
 const record = {
   publicKey,
@@ -48,10 +43,11 @@ fs.writeFileSync(outFile, JSON.stringify(record, null, 2), { mode: 0o600 })
 
 const line = '─'.repeat(50)
 console.log('\n' + line)
-console.log('  AT1C AGENT KEYPAIR GENERATED')
+console.log('  AT1C AGENT KEYPAIR GENERATED (ML-DSA-65)')
 console.log(line)
 console.log(`  Saved to    : ${path.resolve(outFile)}`)
 console.log(`  Permissions : 600 (owner read/write only)`)
+console.log(`  Algorithm   : ML-DSA-65 (FIPS 203) post-quantum`)
 console.log(line)
 console.log('  ⚠️  This file contains your PRIVATE KEY.')
 console.log('  Never commit it to git. Never send it anywhere.')
@@ -64,3 +60,4 @@ console.log('  Next step — register this public key:')
 console.log(`  node register-agent.js --pubkey ${publicKeyHex} \\`)
 console.log(`    --name "My Agent" --owner "user_abc" --permissions "send_payment"`)
 console.log(line + '\n')
+refactor: replace Ed25519 with ML-DSA-65 via @at1c/sdk in generate-agent-keys
