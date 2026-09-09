@@ -1,20 +1,13 @@
 const crypto = require("crypto")
 const fs = require("fs")
+const { generateKeyPair } = require("@at1c/sdk")
 
 function createAgent(ownerUserId) {
   const agentId = "agent_" + crypto.randomBytes(4).toString("hex")
 
-  const keypair = crypto.generateKeyPairSync("ed25519")
-
-  const publicKey = keypair.publicKey.export({
-    type: "spki",
-    format: "pem"
-  })
-
-  const privateKey = keypair.privateKey.export({
-    type: "pkcs8",
-    format: "pem"
-  })
+  const keypair = generateKeyPair()
+  const publicKey = keypair.publicKey
+  const privateKey = keypair.secretKey
 
   const agent = {
     agentId,
