@@ -1,5 +1,5 @@
-const crypto = require("crypto")
 const fs = require("fs")
+const { buildReceipt } = require("@at1c/sdk")
 
 function signAgentAction(agentId, payload) {
   const raw = fs.readFileSync("agents.json", "utf-8")
@@ -11,20 +11,18 @@ function signAgentAction(agentId, payload) {
     throw new Error("Agent not found")
   }
 
-  const privateKey = agent.privateKey
-
-  const data = JSON.stringify(payload)
-
-  const signature = crypto.sign(
-    null,
-    Buffer.from(data),
+  const receipt = buildReceipt(
     {
-      key: privateKey,
-      format: "pem"
-    }
+      userId:     agent.ownerUserId,
+      agentId:    agent.agentId,
+      action:     payload.action || JSON.stringify(payload),
+      status:     'approved',
+      ttlSeconds: 300,
+    },
+    agent.privateKey
   )
 
-  return signature.toString("hex")
+  return receipt.signature
 }
 
 module.exports = {
