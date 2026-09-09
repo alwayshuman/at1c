@@ -1,5 +1,5 @@
-const crypto = require("crypto")
 const fs = require("fs")
+const { verifyReceipt } = require("@at1c/sdk")
 
 function verifyAgentAction(agentId, payload, signatureHex) {
   const raw = fs.readFileSync("agents.json", "utf-8")
@@ -15,18 +15,23 @@ function verifyAgentAction(agentId, payload, signatureHex) {
     throw new Error("Missing public key")
   }
 
-  const data = JSON.stringify(payload)
+  // Reconstruct a minimal receipt shape for SDK verification
+  const receipt = {
+    agentId,
+    userId:    agent.ownerUserId,
+    action:    payload.action || JSON.stringify(payload),
+    status:    'approved',
+    signature: signatureHex,
+    publicKey: agent.publicKey,
+    nonce:     payload.nonce     || '',
+    timestamp: payload.timestamp || new Date().toISOString(),
+    expiresAt: payload.expiresAt || new Date(Date.now() + 300000).toISOString(),
+    receiptId: payload.receiptId || '',
+    version:   '1.0',
+  }
 
-  return crypto.verify(
-    null, // IMPORTANT: Ed25519 ignores hash algorithm here
-    Buffer.from(data),
-    {
-      key: agent.publicKey,
-      format: "pem",
-      type: "spki"
-    },
-    Buffer.from(signatureHex, "hex")
-  )
+  const result = verifyReceipt(receipt)
+  return result.valid
 }
 
 module.exports = { verifyAgentAction }
