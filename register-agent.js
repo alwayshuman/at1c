@@ -13,11 +13,10 @@
 const fs       = require('fs')
 const path     = require('path')
 const crypto   = require('crypto')
+const { generateKeyPair, buildReceipt, verifyReceipt } = require('@at1c/sdk')
 
 const AGENTS_FILE = path.join(__dirname, 'agents.json')
 const args        = process.argv.slice(2)
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
 
 function loadAgents() {
   if (!fs.existsSync(AGENTS_FILE)) return []
@@ -53,65 +52,68 @@ function banner(text) {
   console.log(line)
 }
 
-// ── Sign the certificate with a registry keypair ──────────────────────────────
-// In production this would be the AT1C root registry key.
-// For now we generate a stable registry key on first run and store it locally.
-
 const REGISTRY_KEY_FILE = path.join(__dirname, '.at1c_registry_key.json')
 
 function getRegistryKeys() {
   if (fs.existsSync(REGISTRY_KEY_FILE)) {
     return JSON.parse(fs.readFileSync(REGISTRY_KEY_FILE, 'utf-8'))
   }
-  const { publicKey, privateKey } = crypto.generateKeyPairSync('ed25519', {
-    publicKeyEncoding:  { type: 'spki',  format: 'pem' },
-    privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
-  })
-  const keys = { publicKey, privateKey, createdAt: Date.now() }
+  const keypair = generateKeyPair()
+  const keys = {
+    publicKey:  keypair.publicKey,
+    privateKey: keypair.secretKey,
+    algorithm:  'ML-DSA-65',
+    createdAt:  Date.now()
+  }
   fs.writeFileSync(REGISTRY_KEY_FILE, JSON.stringify(keys, null, 2))
-  console.log('🔑 AT1C Registry root key generated (first run)')
+  console.log('🔑 AT1C Registry root key generated — ML-DSA-65 (FIPS 203) (first run)')
   return keys
 }
 
-function signCertificate(payload, privateKeyPem) {
-  const data = Buffer.from(JSON.stringify(payload))
-  return crypto.sign(null, data, privateKeyPem).toString('hex')
+function signCertificate(payload, privateKey) {
+  const receipt = buildReceipt(
+    {
+      userId:     payload.ownerUserId,
+      agentId:    payload.agentId,
+      action:     'register_agent',
+      status:     'approved',
+      ttlSeconds: 365 * 24 * 60 * 60,
+    },
+    privateKey
+  )
+  return receipt.signature
 }
 
-function verifyCertSignature(payload, signature, publicKeyPem) {
-  const data = Buffer.from(JSON.stringify(payload))
-  try { return crypto.verify(null, data, publicKeyPem, Buffer.from(signature, 'hex')) }
-  catch { return false }
+function verifyCertSignature(payload, signature, publicKey) {
+  const receipt = {
+    userId:     payload.ownerUserId,
+    agentId:    payload.agentId,
+    action:     'register_agent',
+    status:     'approved',
+    signature,
+    publicKey,
+    nonce:      payload.certId    || '',
+    timestamp:  payload.issuedAt  || new Date().toISOString(),
+    expiresAt:  payload.expiresAt || new Date(Date.now() + 300000).toISOString(),
+    receiptId:  payload.certId    || '',
+    version:    '1.0',
+  }
+  const result = verifyReceipt(receipt)
+  return result.valid
 }
-
-// ── Commands ──────────────────────────────────────────────────────────────────
-
 function registerAgent() {
-  const name        = getArg('--name')
-  const owner       = getArg('--owner')
-  const permsRaw    = getArg('--permissions')
-  const tier        = getArg('--tier') || 'standard'
-  const pubKeyHex   = getArg('--pubkey')
+  const name      = getArg('--name')
+  const owner     = getArg('--owner')
+  const permsRaw  = getArg('--permissions')
+  const tier      = getArg('--tier') || 'standard'
+  const pubKeyHex = getArg('--pubkey')
 
   if (!name || !owner || !permsRaw || !pubKeyHex) {
     console.error('Usage: node register-agent.js --pubkey <hex> --name "<name>" --owner "<userId>" --permissions "<perm1,perm2>"')
     console.error('Optional: --tier free|standard|enterprise')
     console.error('')
-    console.error('No --pubkey? Generate a keypair locally first (private key stays on your machine):')
+    console.error('No --pubkey? Generate a keypair locally first:')
     console.error('  node generate-agent-keys.js --out my-agent-keys.json')
-    process.exit(1)
-  }
-
-  // Validate the public key is well-formed before accepting it —
-  // the registrar must never need or see a private key.
-  let publicKey
-  try {
-    const der = Buffer.from(pubKeyHex, 'hex')
-    publicKey = crypto.createPublicKey({ key: der, format: 'der', type: 'spki' })
-      .export({ type: 'spki', format: 'pem' })
-  } catch {
-    console.error('❌ --pubkey is not a valid SPKI-encoded public key (hex DER).')
-    console.error('   Generate one with: node generate-agent-keys.js --out my-agent-keys.json')
     process.exit(1)
   }
 
@@ -122,9 +124,8 @@ function registerAgent() {
   const agentId   = generateAgentId()
   const certId    = generateCertId()
   const now       = Date.now()
-  const expiresAt = now + (365 * 24 * 60 * 60 * 1000) // 1 year
+  const expiresAt = now + (365 * 24 * 60 * 60 * 1000)
 
-  // Certificate payload — this is what gets signed by the AT1C registry
   const certPayload = {
     certId,
     agentId,
@@ -134,7 +135,7 @@ function registerAgent() {
     tier,
     issuedAt:     new Date(now).toISOString(),
     expiresAt:    new Date(expiresAt).toISOString(),
-    issuer:       'AT1C Registry v0.1',
+    issuer:       'AT1C Registry v0.1 — ML-DSA-65',
   }
 
   const certSignature = signCertificate(certPayload, registry.privateKey)
@@ -142,24 +143,24 @@ function registerAgent() {
   const agent = {
     agentId,
     name,
-    ownerUserId:      owner,
+    ownerUserId:  owner,
     permissions,
     tier,
-    publicKey,        // Public key only — AT1C never sees or stores private keys
+    publicKey:    pubKeyHex,
     certificate: {
       ...certPayload,
       signature:      certSignature,
       registryPubKey: registry.publicKey,
+      algorithm:      'ML-DSA-65',
     },
-    status:           'active',
-    createdAt:        now,
+    status:    'active',
+    createdAt: now,
     expiresAt,
   }
 
   agents.push(agent)
   saveAgents(agents)
 
-  // ── Print registration receipt ────────────────────────────────────────────
   banner('AT1C AGENT REGISTRATION CERTIFICATE')
   console.log(`  Status      : ✅ REGISTERED`)
   console.log(`  Agent ID    : ${agentId}`)
@@ -168,6 +169,7 @@ function registerAgent() {
   console.log(`  Tier        : ${tier}`)
   console.log(`  Permissions : ${permissions.join(', ')}`)
   console.log(`  Cert ID     : ${certId}`)
+  console.log(`  Algorithm   : ML-DSA-65 (FIPS 203)`)
   console.log(`  Issued      : ${certPayload.issuedAt}`)
   console.log(`  Expires     : ${certPayload.expiresAt}`)
   console.log(`  Signature   : ${certSignature.slice(0, 40)}...`)
@@ -197,10 +199,9 @@ function listAgents() {
   })
   console.log('\n' + '─'.repeat(42) + '\n')
 }
-
 function verifyAgent(agentId) {
-  const agents   = loadAgents()
-  const agent    = agents.find(a => a.agentId === agentId)
+  const agents = loadAgents()
+  const agent  = agents.find(a => a.agentId === agentId)
 
   banner('AT1C AGENT VERIFICATION')
 
@@ -210,27 +211,28 @@ function verifyAgent(agentId) {
     return
   }
 
-  const cert     = agent.certificate
-  const payload  = { ...cert }
-  const sig      = payload.signature
-  const regKey   = payload.registryPubKey
+  const cert    = agent.certificate
+  const payload = { ...cert }
+  const sig     = payload.signature
+  const regKey  = payload.registryPubKey
   delete payload.signature
   delete payload.registryPubKey
+  delete payload.algorithm
 
-  const sigValid  = verifyCertSignature(payload, sig, regKey)
-  const expired   = Date.now() > agent.expiresAt
+  const sigValid = verifyCertSignature(payload, sig, regKey)
+  const expired  = Date.now() > agent.expiresAt
 
   console.log(`  Agent ID    : ${agent.agentId}`)
   console.log(`  Name        : ${agent.name || '—'}`)
   console.log(`  Owner       : ${agent.ownerUserId}`)
-  console.log(`  Permissions : ${(agent.permissions || []).join(', ')}`)
-  console.log(`  Cert valid  : ${sigValid  ? '✅ YES' : '❌ NO — tampered'}`)
-  console.log(`  Expired     : ${expired   ? '❌ YES' : '✅ NO'}`)
+  console.log(`  Permissions : ${(agent.permissions
+|| []).join(', ')}`)
+  console.log(`  Algorithm   : ML-DSA-65 (FIPS 203)`)
+  console.log(`  Cert valid  : ${sigValid ? '✅ YES' : '❌ NO — tampered'}`)
+  console.log(`  Expired     : ${expired  ? '❌ YES' : '✅ NO'}`)
   console.log(`  Status      : ${sigValid && !expired ? '✅ TRUSTED' : '❌ NOT TRUSTED'}`)
   console.log('─'.repeat(42) + '\n')
 }
-
-// ── Entry point ───────────────────────────────────────────────────────────────
 
 if (hasFlag('--list')) {
   listAgents()
