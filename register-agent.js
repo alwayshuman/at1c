@@ -1,245 +1,124 @@
-#!/usr/bin/env node
-/**
- * AT1C Agent Registrar
- * Registers a new AI agent, issues a signed certificate, and records it in agents.json
- *
- * Usage:
- *   node generate-agent-keys.js --out my-agent-keys.json   (run this first, locally)
- *   node register-agent.js --pubkey <hex> --name "My Payment Agent" --owner "user_abc" --permissions "send_payment,read_balance"
- *   node register-agent.js --list
- *   node register-agent.js --verify <agentId>
- */
+# AT1C Protocol
 
-const fs       = require('fs')
-const path     = require('path')
-const crypto   = require('crypto')
-const { generateKeyPair, buildReceipt, verifyReceipt } = require('@at1c/sdk')
+**Cryptographic Human Consent for AI Agent Actions**
 
-const AGENTS_FILE = path.join(__dirname, 'agents.json')
-const args        = process.argv.slice(2)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![npm](https://img.shields.io/npm/v/@at1c/sdk)](https://www.npmjs.com/package/@at1c/sdk) [![Registry](https://img.shields.io/badge/registry-live-green)](https://registry.at1c.com/health)
 
-function loadAgents() {
-  if (!fs.existsSync(AGENTS_FILE)) return []
-  try { return JSON.parse(fs.readFileSync(AGENTS_FILE, 'utf-8')) }
-  catch { return [] }
-}
+---
 
-function saveAgents(agents) {
-  fs.writeFileSync(AGENTS_FILE, JSON.stringify(agents, null, 2))
-}
+## 🔐 Post-Quantum Ready — ML-DSA-65 (FIPS 203)
 
-function getArg(flag) {
-  const i = args.indexOf(flag)
-  return i !== -1 ? args[i + 1] : null
-}
+AT1C uses **ML-DSA-65**, a NIST-approved post-quantum digital signature scheme (FIPS 203). Ed25519 has been retired. Every receipt, certificate, and verification is now quantum-resistant.
 
-function hasFlag(flag) {
-  return args.includes(flag)
-}
+**SDK v1.0.3 — 12/12 tests passing — published to npm.**
 
-function generateAgentId() {
-  return 'agent_' + crypto.randomBytes(6).toString('hex')
-}
+While others are planning quantum resistance, AT1C has shipped it.
 
-function generateCertId() {
-  return 'cert_' + crypto.randomBytes(8).toString('hex')
-}
+---
 
-function banner(text) {
-  const line = '─'.repeat(42)
-  console.log('\n' + line)
-  console.log('  ' + text)
-  console.log(line)
-}
+AT1C gives you a cryptographically signed, independently verifiable proof that a human approved a specific AI agent action before that action executes.
 
-const REGISTRY_KEY_FILE = path.join(__dirname, '.at1c_registry_key.json')
+**No approval, no valid action. No exceptions.**
 
-function getRegistryKeys() {
-  if (fs.existsSync(REGISTRY_KEY_FILE)) {
-    return JSON.parse(fs.readFileSync(REGISTRY_KEY_FILE, 'utf-8'))
-  }
-  const keypair = generateKeyPair()
-  const keys = {
-    publicKey:  keypair.publicKey,
-    privateKey: keypair.secretKey,
-    algorithm:  'ML-DSA-65',
-    createdAt:  Date.now()
-  }
-  fs.writeFileSync(REGISTRY_KEY_FILE, JSON.stringify(keys, null, 2))
-  console.log('🔑 AT1C Registry root key generated — ML-DSA-65 (FIPS 203) (first run)')
-  return keys
-}
+Built for developers. Required for EU AI Act compliance (enforcement: August 2026).
 
-function signCertificate(payload, privateKey) {
-  const receipt = buildReceipt(
-    {
-      userId:     payload.ownerUserId,
-      agentId:    payload.agentId,
-      action:     'register_agent',
-      status:     'approved',
-      ttlSeconds: 365 * 24 * 60 * 60,
-    },
-    privateKey
-  )
-  return receipt.signature
-}
+## Try it in 30 seconds
 
-function verifyCertSignature(payload, signature, publicKey) {
-  const receipt = {
-    userId:     payload.ownerUserId,
-    agentId:    payload.agentId,
-    action:     'register_agent',
-    status:     'approved',
-    signature,
-    publicKey,
-    nonce:      payload.certId    || '',
-    timestamp:  payload.issuedAt  || new Date().toISOString(),
-    expiresAt:  payload.expiresAt || new Date(Date.now() + 300000).toISOString(),
-    receiptId:  payload.certId    || '',
-    version:    '1.0',
-  }
-  const result = verifyReceipt(receipt)
-  return result.valid
-}
-function registerAgent() {
-  const name      = getArg('--name')
-  const owner     = getArg('--owner')
-  const permsRaw  = getArg('--permissions')
-  const tier      = getArg('--tier') || 'standard'
-  const pubKeyHex = getArg('--pubkey')
+```bash
+git clone https://github.com/at1c-protocol/at1c-protocol-official.git
+cd at1c-protocol-official
+npm install
+npm run demo
+```
 
-  if (!name || !owner || !permsRaw || !pubKeyHex) {
-    console.error('Usage: node register-agent.js --pubkey <hex> --name "<name>" --owner "<userId>" --permissions "<perm1,perm2>"')
-    console.error('Optional: --tier free|standard|enterprise')
-    console.error('')
-    console.error('No --pubkey? Generate a keypair locally first:')
-    console.error('  node generate-agent-keys.js --out my-agent-keys.json')
-    process.exit(1)
-  }
+Or install the SDK directly:
 
-  const permissions = permsRaw.split(',').map(p => p.trim())
-  const agents      = loadAgents()
-  const registry    = getRegistryKeys()
+```bash
+npm install @at1c/sdk
+```
 
-  const agentId   = generateAgentId()
-  const certId    = generateCertId()
-  const now       = Date.now()
-  const expiresAt = now + (365 * 24 * 60 * 60 * 1000)
+## Key Documents
 
-  const certPayload = {
-    certId,
-    agentId,
-    name,
-    ownerUserId:  owner,
-    permissions,
-    tier,
-    issuedAt:     new Date(now).toISOString(),
-    expiresAt:    new Date(expiresAt).toISOString(),
-    issuer:       'AT1C Registry v0.1 — ML-DSA-65',
-  }
+- 📄 **Whitepaper** — EU AI Act compliance, sector analysis, Algorand x402 payment architecture
+- 📜 **Manifesto** — AT1C founding principles: sovereign identity, humans first
+- 📚 **All docs** — protocol spec, receipts, verification, SDK reference
 
-  const certSignature = signCertificate(certPayload, registry.privateKey)
+## Live Registry
 
-  const agent = {
-    agentId,
-    name,
-    ownerUserId:  owner,
-    permissions,
-    tier,
-    publicKey:    pubKeyHex,
-    certificate: {
-      ...certPayload,
-      signature:      certSignature,
-      registryPubKey: registry.publicKey,
-      algorithm:      'ML-DSA-65',
-    },
-    status:    'active',
-    createdAt: now,
-    expiresAt,
-  }
+```bash
+curl https://registry.at1c.com/health
+```
 
-  agents.push(agent)
-  saveAgents(agents)
+## How it works
 
-  banner('AT1C AGENT REGISTRATION CERTIFICATE')
-  console.log(`  Status      : ✅ REGISTERED`)
-  console.log(`  Agent ID    : ${agentId}`)
-  console.log(`  Name        : ${name}`)
-  console.log(`  Owner       : ${owner}`)
-  console.log(`  Tier        : ${tier}`)
-  console.log(`  Permissions : ${permissions.join(', ')}`)
-  console.log(`  Cert ID     : ${certId}`)
-  console.log(`  Algorithm   : ML-DSA-65 (FIPS 203)`)
-  console.log(`  Issued      : ${certPayload.issuedAt}`)
-  console.log(`  Expires     : ${certPayload.expiresAt}`)
-  console.log(`  Signature   : ${certSignature.slice(0, 40)}...`)
-  console.log('─'.repeat(42))
-  console.log('  ⚠️  Save your Agent ID — you will need it')
-  console.log('  to issue AT1C receipts and verify actions.')
-  console.log('─'.repeat(42) + '\n')
-}
+1. **Request** — an AI agent asks permission to perform a specific action
+2. **Approve** — a human explicitly grants or denies it
+3. **Proof** — an ML-DSA-65 (FIPS 203) post-quantum signed receipt is generated, binding the user, action, timestamp, and nonce
+4. **Verify** — any system independently verifies the receipt before execution — no trust required
 
-function listAgents() {
-  const agents = loadAgents()
-  if (agents.length === 0) {
-    console.log('\nNo agents registered yet.\n')
-    return
-  }
-  banner(`AT1C AGENT REGISTRY  (${agents.length} agent${agents.length > 1 ? 's' : ''})`)
-  agents.forEach((a, i) => {
-    const expired = Date.now() > a.expiresAt
-    const status  = expired ? '❌ EXPIRED' : '✅ ACTIVE'
-    console.log(`\n  [${i + 1}] ${a.name || a.agentId}`)
-    console.log(`      ID          : ${a.agentId}`)
-    console.log(`      Owner       : ${a.ownerUserId}`)
-    console.log(`      Tier        : ${a.tier || 'standard'}`)
-    console.log(`      Permissions : ${(a.permissions || []).join(', ')}`)
-    console.log(`      Status      : ${status}`)
-    console.log(`      Expires     : ${a.expiresAt ? new Date(a.expiresAt).toISOString() : 'legacy — no expiry set'}`)
-  })
-  console.log('\n' + '─'.repeat(42) + '\n')
-}
-function verifyAgent(agentId) {
-  const agents = loadAgents()
-  const agent  = agents.find(a => a.agentId === agentId)
+Every receipt is single-use (nonce-based replay protection). Approval is scoped to the exact action requested — not transferable to any other action.
 
-  banner('AT1C AGENT VERIFICATION')
+## AT1C vs. The Others
 
-  if (!agent) {
-    console.log(`  ❌ UNKNOWN — Agent ${agentId} not found in registry`)
-    console.log('─'.repeat(42) + '\n')
-    return
-  }
+The agentic AI space has several overlapping projects. Here is where AT1C differs from the closest ones:
 
-  const cert    = agent.certificate
-  const payload = { ...cert }
-  const sig     = payload.signature
-  const regKey  = payload.registryPubKey
-  delete payload.signature
-  delete payload.registryPubKey
-  delete payload.algorithm
+**vs. autonomous agent runtimes (Theseus, etc.)** — those systems remove humans from the loop by design. AT1C keeps a human in the loop by design. These are not competing approaches — they target different buyers. Autonomous runtimes suit DeFi/crypto use cases where fully autonomous execution is the goal. AT1C suits regulated sectors where human oversight is legally required.
 
-  const sigValid = verifyCertSignature(payload, sig, regKey)
-  const expired  = Date.now() > agent.expiresAt
+**vs. data redaction gateways (TrustLayer, etc.)** — those systems control what data AI sees. AT1C controls what actions AI is permitted to take. A developer could use both without conflict.
 
-  console.log(`  Agent ID    : ${agent.agentId}`)
-  console.log(`  Name        : ${agent.name || '—'}`)
-  console.log(`  Owner       : ${agent.ownerUserId}`)
-  console.log(`  Permissions : ${(agent.permissions
-|| []).join(', ')}`)
-  console.log(`  Algorithm   : ML-DSA-65 (FIPS 203)`)
-  console.log(`  Cert valid  : ${sigValid ? '✅ YES' : '❌ NO — tampered'}`)
-  console.log(`  Expired     : ${expired  ? '❌ YES' : '✅ NO'}`)
-  console.log(`  Status      : ${sigValid && !expired ? '✅ TRUSTED' : '❌ NOT TRUSTED'}`)
-  console.log('─'.repeat(42) + '\n')
-}
+**vs. payment authorization protocols (ATXP, etc.)** — those systems authorize agent payments. AT1C authorizes any agent action, with cryptographic proof of human approval, across any domain — not scoped to payments.
 
-if (hasFlag('--list')) {
-  listAgents()
-} else if (hasFlag('--verify')) {
-  const id = getArg('--verify')
-  if (!id) { console.error('Provide an agent ID: --verify <agentId>'); process.exit(1) }
-  verifyAgent(id)
-} else {
-  registerAgent()
-}
+The field is converging on a shared framing: treat autonomous agents as instruments acting under a person's authority, with scoped, revocable, auditable chains of responsibility. AT1C implements this today, with a working SDK and live registry.
+
+## Why it matters right now
+
+The EU AI Act begins enforcement in August 2026. It requires:
+
+- Accountability for automated decisions
+- Human oversight of high-risk AI actions
+- Auditable records of AI behaviour
+
+AT1C gives you all three out of the box. Primary target sectors: fintech, health, legal.
+
+## Core Safety Rules
+
+1. **No implicit authority** — nothing acts without explicit approval
+2. **Context binding** — approval is valid only for its exact action and resource
+3. **Replay protection** — every receipt is single-use
+4. **Verification before execution** — actions must be verified before they run
+5. **Non-custodial** — AT1C never holds signing keys. Agent keys and user keys stay on their respective devices.
+
+## Project structure
+
+### Documentation
+
+- 📄 Whitepaper: `AT1C_Protocol_Whitepaper_v1.4.docx`
+- 📜 Manifesto: `docs/manifesto.md`
+- 🔧 Protocol Spec: `docs/protocol.md`
+- 📚 All docs: `docs/`
+- npm package: `@at1c/sdk`
+- Live registry: `registry.at1c.com`
+
+## Known Limitations & Roadmap
+
+- **Agent key custody** — ✅ done (v1.1) non-custodial by design. Agents generate their own keypairs locally, the registry only ever receives and signs over the public key.
+
+- **Live registry** — ✅ done (v1.2) — authenticated agent verification live at `registry.at1c.com` over HTTPS. Registry private key held in environment variables only, never on the filesystem.
+
+- **Open web registration** — ✅ done (v1.3) any user can register a personal or entity owned agent via `at1c.com/users/register-agent.php`. No CLI required for registration.
+
+- **Browser-side keypair generation** — ✅ done (v1.4) keypair generated in the browser. Private key downloads automatically, never touches the server. Permissions selected via checkboxes. No terminal required — accessible to non-technical users.
+
+- **Quantum resistance** — ✅ done (v1.0.3) AT1C uses ML-DSA-65 (FIPS 203), a NIST-approved post-quantum digital signature scheme. Ed25519 has been retired. SDK v1.0.3 — 12/12 tests passing — published to npm.
+
+- **End-user passkey onboarding** (planned v1.5) — WebAuthn/FIDO2 flow so the signing key lives on the user's device, unlocked by Face ID or fingerprint. AT1C never holds it.
+
+- **Hosted receipt storage** (planned v1.6) — currently receipts are stored locally. Long-term hosted storage planned as an optional paid tier — evidence/insurance retention, not a protocol requirement.
+
+- **Tiered autonomy** (planned v2.0) — low/medium/high trust tiers with alarm thresholds for fleet management. Maps directly onto EU AI Act risk classifications.
+
+- **Algorand x402 payment integration** (planned v2.1) — sub-$0.0002 micro-transaction fees, USDC settlement, card onramp. Target payment rail for agent-scale commerce.
+
+- **Agent Manifest** (future) — structured, signed per-agent document mapping onto EU AI Act Article 13/14 documentation requirements.
+
+These are documented deliberately — AT1C's value depends on being trustworthy, and that includes being transparent about what is solid today versus what is still being built.
