@@ -21,10 +21,10 @@ function signAgentAction(agentId, payload) {
     },
     agent.privateKey
   )
-  refactor: replace Ed25519 signing with ML-DSA-65 via @at1c/sdk in signAgentAction
   return receipt.signature
 }
 
 module.exports = {
   signAgentAction
 }
+refactor: replace Ed25519 verify with ML-DSA-65 via @at1c/sdk in verifyAgentAction
