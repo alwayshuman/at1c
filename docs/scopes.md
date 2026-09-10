@@ -23,7 +23,7 @@ Scope Schema v0.1
 
   "actor": {
     "agent_id": "agent-identifier",
-    "public_key": "<ed25519 public key, base64url>"
+    "public_key": "<ML-DSA-65 public key, base64url>"
   },
 
   "permissions": [
@@ -43,8 +43,8 @@ Scope Schema v0.1
   },
 
   "granted_by": {
-    "authority": "<user DID or ed25519 public key, base64url>",
-    "signature": "<ed25519 signature over canonical scope body, base64url>"
+    "authority": "<user DID or ML-DSA-65 public key, base64url>",
+    "signature": "<ML-DSA-65 signature over canonical scope body, base64url>"
   }
 }
 Field Definitions
@@ -54,14 +54,14 @@ version	Yes	Schema version. Currently "0.1".
 issued_at	Yes	ISO 8601 UTC timestamp when scope was granted.
 expires_at	Yes	ISO 8601 UTC timestamp after which scope is invalid.
 actor.agent_id	Yes	The agent this scope applies to.
-actor.public_key	Yes	Agent's ed25519 public key (base64url).
+actor.public_key	Yes	Agent's ML-DSA-65 public key (base64url).
 permissions	Yes	Array of action type strings the agent is permitted to perform.
 resources	Yes	Array of resource patterns the agent may act on. Supports * wildcard at path level.
 constraints.max_executions	No	Maximum number of actions permitted under this scope.
 constraints.rate_limit	No	Rate limit string in N/period format (e.g. 10/hour, 100/day).
 constraints.max_spend_usd	No	Maximum cumulative spend the agent may authorize under this scope.
 granted_by.authority	Yes	DID or public key of the granting user.
-granted_by.signature	Yes	ed25519 signature over canonical scope body (all fields except granted_by.signature), sorted keys.
+granted_by.signature	Yes	ML-DSA-65 signature over canonical scope body (all fields except granted_by.signature), sorted keys.
 
 
 Scope Matching

@@ -93,8 +93,8 @@ Every approved action produces a `SignedReceipt`:
   action:     'send_payment',
   timestamp:  '2026-06-12T09:00:00.000Z',
   expiresAt:  '2026-06-12T09:05:00.000Z',
-  signature:  'ed25519 hex signature',
-  publicKey:  'ed25519 public key hex',
+  signature:  'ML-DSA-65 hex signature',
+  publicKey:  'ML-DSA-65 public key hex',
 }
 ```
 
@@ -184,7 +184,7 @@ console.log(`${log.length} actions recorded this session`)
 | **No implicit authority** | Nothing executes without explicit human approval |
 | **Context binding** | Approval is valid only for its exact action, agent, and user |
 | **Replay protection** | Every receipt is single-use via nonce |
-| **Tamper detection** | Ed25519 signature covers all receipt fields |
+| **Tamper detection** | ML-DSA-65 signature covers all receipt fields |
 | **Audit trail** | Every action logged with cryptographic proof |
 | **Expiry** | Receipts expire after a configurable TTL |
 
@@ -231,7 +231,7 @@ Builds and signs a receipt. Returns `SignedReceipt`.
 Verifies signature, expiry, status, and replay. Returns `VerifyResult`.
 
 ### `generateKeyPair()`
-Generates a new Ed25519 keypair. Returns `KeyPair`.
+Generates a new ML-DSA-65 keypair. Returns `KeyPair`.
 
 ### `loadOrCreateKeyPair(filePath)`
 Loads keys from disk or generates and saves new ones.

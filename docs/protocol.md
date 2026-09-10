@@ -128,7 +128,7 @@ Requests may be approved, denied, or expired. Approval does not imply unlimited 
   "timestamp": 1753000000,
   "expiresAt": 1753003600,
   "nonce": "7d8a2f...",
-  "signature": "ed25519:..."
+  "signature": "ML-DSA-65:..."
 }
 ```
 
@@ -144,7 +144,7 @@ Requests may be approved, denied, or expired. Approval does not imply unlimited 
 | `approvedBy` | Identity of the approving authority |
 | `timestamp` | Approval creation timestamp |
 | `nonce` | Unique single-use anti-replay value |
-| `signature` | Ed25519 signature over the receipt |
+| `signature` | ML-DSA-65 signature over the receipt |
 
 Receipts are serialised deterministically before signing to ensure consistent hashing and signature stability.
 
@@ -190,7 +190,7 @@ A previously used nonce must not be accepted again. Replay detection prevents re
 
 ## Chapter 7 — Cryptographic Implementation
 
-AT1C uses **Ed25519** (RFC 8032) for all signatures — an IETF-standardised elliptic curve signature scheme with a strong security record and fast verification.
+AT1C uses **ML-DSA-65** (RFC 8032) for all signatures — an IETF-standardised elliptic curve signature scheme with a strong security record and fast verification.
 
 **What AT1C guarantees:**
 - A valid receipt proves the holder of the private key signed the exact action payload — no one else could have produced that signature
@@ -200,7 +200,7 @@ AT1C uses **Ed25519** (RFC 8032) for all signatures — an IETF-standardised ell
 **Layered security model:**
 AT1C is one layer in a defence-in-depth stack. The receipt proves a specific key signed a specific approval. The question of who holds that key is answered by the authentication layer (passkey, biometric, 2FA) sitting alongside AT1C. Combined, these two layers deliver identity assurance and action accountability.
 
-**Known limitation:** Ed25519 is not post-quantum secure. Migration to a NIST-approved post-quantum signature scheme is on the long-term roadmap.
+**Known limitation:** ML-DSA-65 is not post-quantum secure. Migration to a NIST-approved post-quantum signature scheme is on the long-term roadmap.
 
 ---
 
@@ -209,7 +209,7 @@ AT1C is one layer in a defence-in-depth stack. The receipt proves a specific key
 Agents must be registered with the AT1C registry before participating in the protocol.
 
 Registration process:
-1. Agent generates an Ed25519 keypair locally — private key never leaves the device
+1. Agent generates an ML-DSA-65 keypair locally — private key never leaves the device
 2. Agent submits the public key (SPKI hex DER) to the registry
 3. Registry validates the public key and signs a certificate over it
 4. Registry returns a signed agent certificate with a unique Agent ID

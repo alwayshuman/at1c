@@ -30,7 +30,7 @@ Response — Verification Granted
   "receipt_id": "at1c_01J5K2M...",
   "verified_at": "2026-08-11T14:00:01Z",
   "action_class": "irreversible",
-  "verifier_signature": "<ed25519 sig by AT1C verifier key, base64url>"
+  "verifier_signature": "<ML-DSA-65 sig by AT1C verifier key, base64url>"
 }
 Response — Verification Denied
 {

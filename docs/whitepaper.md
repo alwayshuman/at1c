@@ -101,7 +101,7 @@ request → approve → proof → verify
 
 **Step 2 — Approve:** A human explicitly grants or denies the request. Approval is specific to the action named — it cannot be transferred to any other action. This is the human-in-the-loop moment the EU AI Act requires.
 
-**Step 3 — Proof:** A signed receipt is generated, cryptographically binding the approving user's identity, the exact action, the agent's registered public key, a timestamp, and a single-use nonce. The receipt is signed with the user's Ed25519 private key — which never leaves their device.
+**Step 3 — Proof:** A signed receipt is generated, cryptographically binding the approving user's identity, the exact action, the agent's registered public key, a timestamp, and a single-use nonce. The receipt is signed with the user's ML-DSA-65 private key — which never leaves their device.
 
 **Step 4 — Verify:** Any system — the agent, a counterparty, a regulator, or an auditor independently verifies the receipt before the action executes. No trust in AT1C required; the mathematics is the guarantee.
 
@@ -135,13 +135,13 @@ This maps directly onto the EU AI Act's risk classification framework.
 - A valid receipt proves the holder of the private key signed the exact action payload — no one else could have produced that signature
 - Nonces are unique and single-use replay attacks are prevented by construction
 - Agent certificates are signed by the AT1C registry root key agent identity is independently verifiable
-- Ed25519 (RFC 8032) IETF-standardised elliptic curve signature scheme, strong security record
+- ML-DSA-65 (RFC 8032) IETF-standardised elliptic curve signature scheme, strong security record
 
 **The layered security model:**
 AT1C is one layer in a defence-in-depth stack. The receipt proves a specific key signed a specific approval. The question of who holds that key is answered by your authentication layer (passkey, biometric, 2FA). Combined, these two layers deliver identity assurance and action accountability the same separation of concerns that governs every major payment network and PKI system in production today.
 
 **Known limitations:**
-- Ed25519 is not post-quantum secure — migration to a NIST-approved post-quantum scheme is on the long-term roadmap
+- ML-DSA-65 is not post-quantum secure — migration to a NIST-approved post-quantum scheme is on the long-term roadmap
 - Receipt storage is currently local — hosted long-term storage is a planned paid tier
 - Tiered autonomy is planned — current protocol supports scoped permissions per agent
 - A valid receipt proves a specific action scope was approved at a specific time — it does not prove the agent acted within that scope, what the agent observed before acting, or what it actually executed post-approval. Post-execution outcome verification is a planned future layer
@@ -232,7 +232,7 @@ npm install @at1c/sdk
 ```
 
 **Step 3 — Register your agent (5 minutes)**
-Visit **at1c.com/users/register-agent.php**. Your browser generates the Ed25519 keypair — the private key downloads to your device and never leaves it. Select permissions via checkboxes. The registry signs a certificate over your public key.
+Visit **at1c.com/users/register-agent.php**. Your browser generates the ML-DSA-65 keypair — the private key downloads to your device and never leaves it. Select permissions via checkboxes. The registry signs a certificate over your public key.
 
 **Step 4 — Integrate receipts into your action flow**
 - Agent generates a request for the specific action

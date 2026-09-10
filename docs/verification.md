@@ -29,8 +29,8 @@ Confirm receipt.replay_nonce has not been seen before. The verifier MUST maintai
 nonce NOT IN nonce_registry  →  PASS
 nonce_registry.add(nonce)
 Step 4 — Signature Verification
-Reconstruct the canonical receipt body (all fields except approval.signature, keys sorted, UTF-8 JSON) and verify the ed25519 signature against approval.authority.
-ed25519_verify(
+Reconstruct the canonical receipt body (all fields except approval.signature, keys sorted, UTF-8 JSON) and verify the ML-DSA-65 signature against approval.authority.
+ML-DSA-65_verify(
   public_key = approval.authority,
   message    = canonical_json(receipt_without_signature),
   signature  = approval.signature
@@ -48,7 +48,7 @@ On success, the verifier returns a signed verification result:
   "receipt_id": "at1c_01J5K2M...",
   "verified_at": "2026-08-11T14:00:01Z",
   "action_class": "irreversible",
-  "verifier_signature": "<ed25519 signature by AT1C verifier key, base64url>"
+  "verifier_signature": "<ML-DSA-65 signature by AT1C verifier key, base64url>"
 }
 On failure:
 {

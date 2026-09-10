@@ -32,7 +32,7 @@ Receipt Schema v0.1
 
   "actor": {
     "agent_id": "agent-identifier",
-    "public_key": "<ed25519 public key, base64url>"
+    "public_key": "<ML-DSA-65 public key, base64url>"
   },
 
   "action": {
@@ -44,8 +44,8 @@ Receipt Schema v0.1
   },
 
   "approval": {
-    "authority": "<user DID or ed25519 public key, base64url>",
-    "signature": "<ed25519 signature over canonical receipt body, base64url>"
+    "authority": "<user DID or ML-DSA-65 public key, base64url>",
+    "signature": "<ML-DSA-65 signature over canonical receipt body, base64url>"
   },
 
   "replay_nonce": "<32 random bytes, base64url>"
@@ -57,14 +57,14 @@ version	Yes	Schema version. Currently "0.1".
 issued_at	Yes	ISO 8601 UTC timestamp of approval.
 expires_at	Yes	ISO 8601 UTC timestamp after which receipt is invalid.
 actor.agent_id	Yes	Identifier for the agent requesting the action.
-actor.public_key	Yes	Agent's ed25519 public key (base64url). Used to verify agent identity.
+actor.public_key	Yes	Agent's ML-DSA-65 public key (base64url). Used to verify agent identity.
 action.type	Yes	Action identifier string (e.g. send_email, delete_file, post_message).
 action.class	Yes	One of compensable, retriable, or irreversible. See Action Classes below.
 action.scope_ref	Yes	Reference to the Scope that authorizes this action.
 action.resource	Yes	The specific resource this action targets. URI or structured descriptor.
 action.description	No	Human-readable description shown to the approving authority.
 approval.authority	Yes	DID or public key of the approving party (the user).
-approval.signature	Yes	ed25519 signature over the canonical receipt body (all fields except approval.signature itself), serialized as UTF-8 JSON with sorted keys.
+approval.signature	Yes	ML-DSA-65 signature over the canonical receipt body (all fields except approval.signature itself), serialized as UTF-8 JSON with sorted keys.
 replay_nonce	Yes	32 random bytes (base64url). Verifier MUST reject a previously-seen nonce.
 
 
@@ -82,7 +82,7 @@ The canonical body for signing is the full receipt JSON with:
     • keys sorted lexicographically at every level
     • approval.signature field omitted
     • serialized as UTF-8 with no extra whitespace
-signature = ed25519_sign(
+signature = ML-DSA-65_sign(
   private_key = authority_signing_key,
   message     = canonical_json(receipt_without_signature)
 )
